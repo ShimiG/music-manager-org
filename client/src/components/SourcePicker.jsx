@@ -10,7 +10,9 @@ import { openSettings } from '../utils/navigation';
 // `requiresConnection(source)` says whether this screen needs the user's own
 // connection for that source. The Library always does; Search passes its own
 // rule, because some sources search public content without one.
-export default function SourcePicker({ sources, value, onChange, filter, requiresConnection, ariaLabel = 'Source' }) {
+// `tipFor(source, selected)` gives the tooltip for a usable chip (none: no
+// tooltip); greyed chips always say how to make them usable.
+export default function SourcePicker({ sources, value, onChange, filter, requiresConnection, tipFor, ariaLabel = 'Source' }) {
     const visible = (sources || []).filter(s => (filter ? filter(s) : true));
     if (visible.length === 0) return null;
 
@@ -26,31 +28,30 @@ export default function SourcePicker({ sources, value, onChange, filter, require
     };
 
     return (
-        <div role="tablist" aria-label={ariaLabel} style={{ display: 'inline-flex', background: '#282828', borderRadius: '20px', padding: '4px', gap: '2px', flexWrap: 'wrap' }}>
+        <div role="tablist" aria-label={ariaLabel} className="source-picker">
             {visible.map(s => {
                 const selected = s.name === value;
                 const greyed = needsConnect(s);
                 const blocked = unavailable(s);
-                const title = blocked
+                const tip = blocked
                     ? `${s.label} is not set up on this computer yet. Open Settings, Accounts.`
-                    : greyed ? `Connect ${s.label}` : s.label;
+                    : greyed ? `Connect ${s.label}` : (tipFor ? tipFor(s, selected) : '');
+                const classes = ['source-chip', 'pressable', greyed && 'is-greyed', blocked && 'is-blocked'].filter(Boolean).join(' ');
                 return (
                     <button
                         key={s.name}
                         type="button"
                         role="tab"
                         aria-selected={selected}
-                        title={title}
+                        className={classes}
+                        data-tip={tip || undefined}
+                        data-tip-pos="below"
                         onClick={() => handleClick(s)}
-                        style={{
-                            padding: '6px 14px', borderRadius: '16px', border: 'none', fontWeight: 'bold', fontSize: '13px',
-                            cursor: 'pointer',
-                            background: selected ? s.color : 'transparent',
-                            color: selected ? 'white' : (greyed ? '#666' : '#b3b3b3'),
-                            opacity: blocked ? 0.5 : 1
-                        }}
+                        // The service's own colours: its fill (with its label
+                        // colour) when selected, its text colour for the glyph.
+                        style={{ '--chip-fill': s.fill, '--chip-on-fill': s.onFill, '--chip-glyph': s.text }}
                     >
-                        <span aria-hidden="true" style={{ marginRight: '6px' }}>{s.icon}</span>{s.label}
+                        <span aria-hidden="true" className="source-chip-glyph">{s.icon}</span>{s.label}
                     </button>
                 );
             })}

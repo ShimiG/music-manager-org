@@ -9,9 +9,9 @@ import { API_BASE } from '../utils/api';
 // Creating the account happens here too, once, with the registration code
 // that was set when the cloud service was deployed.
 
-const field = { padding: '12px', borderRadius: '6px', border: '1px solid #333', background: '#282828', color: 'white', outline: 'none' };
-const linkStyle = { textAlign: 'center', fontSize: '14px', color: '#b3b3b3', cursor: 'pointer', background: 'none', border: 'none', padding: 0, font: 'inherit' };
-const note = { margin: 0, fontSize: '13px', color: '#b3b3b3', textAlign: 'center' };
+const field = { padding: '12px', borderRadius: '6px', border: '1px solid var(--border-200)', background: 'var(--surface-300)', color: 'var(--text-primary)', outline: 'none' };
+const linkStyle = { textAlign: 'center', fontSize: '14px', color: 'var(--text-secondary)', cursor: 'pointer', background: 'none', border: 'none', padding: 0, font: 'inherit' };
+const note = { margin: 0, fontSize: '13px', color: 'var(--text-secondary)', textAlign: 'center' };
 
 // Whether this computer knows where the cloud service is.
 async function cloudInfo(signal) {
@@ -70,10 +70,10 @@ export default function AuthScreen({ onLoginSuccess }) {
     };
 
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh', width: '100vw', background: '#121212', color: 'white' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh', width: '100vw', background: 'var(--bg-base)', color: 'var(--text-primary)' }}>
             <h1 style={{ marginBottom: '30px', fontSize: '36px' }}>Music Manager</h1>
 
-            <form onSubmit={handleSubmit} aria-label={creating ? 'Create your account' : 'Sign in'} style={{ background: '#181818', padding: '40px', borderRadius: '12px', width: '300px', display: 'flex', flexDirection: 'column', gap: '20px', boxShadow: '0 8px 24px rgba(0,0,0,0.5)' }}>
+            <form onSubmit={handleSubmit} aria-label={creating ? 'Create your account' : 'Sign in'} style={{ background: 'var(--surface-100)', padding: '40px', borderRadius: '12px', width: '300px', display: 'flex', flexDirection: 'column', gap: '20px', boxShadow: '0 8px 24px rgba(0,0,0,0.5)' }}>
                 <h2 style={{ margin: 0, textAlign: 'center' }}>{creating ? 'Create Account' : 'Sign In'}</h2>
 
                 <p style={note}>
@@ -82,9 +82,9 @@ export default function AuthScreen({ onLoginSuccess }) {
                         : 'Your playlists, history and YouTube connection come with your account to every computer you sign in on.'}
                 </p>
 
-                {error && <div role="alert" style={{ color: '#ff4d4d', fontSize: '14px', textAlign: 'center', background: '#ff4d4d20', padding: '10px', borderRadius: '6px' }}>{error}</div>}
+                {error && <div role="alert" style={{ color: 'var(--danger)', fontSize: '14px', textAlign: 'center', background: 'var(--danger-tint)', padding: '10px', borderRadius: '6px' }}>{error}</div>}
                 {stuck && (
-                    <div role="alert" style={{ color: '#ffb84d', fontSize: '13px', textAlign: 'center', background: '#ffb84d20', padding: '10px', borderRadius: '6px' }}>
+                    <div role="alert" style={{ color: 'var(--notice)', fontSize: '13px', textAlign: 'center', background: 'var(--notice-tint)', padding: '10px', borderRadius: '6px' }}>
                         The address of the cloud service set for this copy of the app (CLOUD_URL) is not usable. Correct it and start the app again.
                     </div>
                 )}
@@ -152,7 +152,7 @@ export default function AuthScreen({ onLoginSuccess }) {
                 <button
                     type="submit"
                     disabled={isLoading || !cloud || stuck}
-                    style={{ background: '#1db954', color: 'black', padding: '12px', border: 'none', borderRadius: '24px', fontWeight: 'bold', fontSize: '16px', cursor: isLoading ? 'not-allowed' : 'pointer', marginTop: '10px', opacity: !cloud || stuck ? 0.5 : 1 }}
+                    style={{ background: 'var(--accent)', color: 'var(--on-accent)', padding: '12px', border: 'none', borderRadius: '24px', fontWeight: 'bold', fontSize: '16px', cursor: isLoading ? 'not-allowed' : 'pointer', marginTop: '10px', opacity: !cloud || stuck ? 0.5 : 1 }}
                 >
                     {isLoading ? (creating ? 'Creating…' : 'Signing in…') : (creating ? 'Create Account' : 'Sign In')}
                 </button>

@@ -6,8 +6,8 @@ import VirtualList from './VirtualList';
 // light card is the one beside Search and Recently Played. `heading={false}`
 // leaves the title out where a tab already names the list.
 const THEMES = {
-    light: { panel: '#f9f9f9', heading: 'black', rule: '#ddd', row: 'white', rowActive: '#1db95420', text: 'black', empty: '#888', shadow: '0 1px 3px rgba(0,0,0,0.1)', marker: '#1db954' },
-    dark: { panel: 'transparent', heading: 'white', rule: '#333', row: '#ffffff0d', rowActive: '#ffffff24', text: '#eee', empty: '#999', shadow: 'none', marker: 'var(--theme-accent, #1db954)' }
+    light: { panel: 'var(--panel-light)', heading: 'var(--ink-on-light)', rule: 'var(--panel-light-rule)', row: 'var(--panel-light-row)', rowActive: 'var(--accent-tint)', text: 'var(--ink-on-light)', empty: 'var(--text-subtle)', shadow: 'var(--shadow-light-card)', marker: 'var(--accent)' },
+    dark: { panel: 'transparent', heading: 'var(--text-primary)', rule: 'var(--border-200)', row: 'var(--overlay-row)', rowActive: 'var(--overlay-active)', text: 'var(--text-strong)', empty: 'var(--text-dim)', shadow: 'none', marker: 'var(--theme-accent)' }
 };
 
 // Every row is this tall, its 8 px gap included (VirtualList needs equal rows).
@@ -43,7 +43,7 @@ export default function Queue({ theme = 'light', heading = true }) {
                                     <div style={{ flex: 1, cursor: 'pointer', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} onClick={() => playQueueIndex(index)}>
                                         <div style={{ fontSize: '14px', fontWeight: isPlayingNode ? 'bold' : 'normal', color: c.text, overflow: 'hidden', textOverflow: 'ellipsis' }}>{track.title}</div>
                                     </div>
-                                    <button onClick={() => removeFromQueue(index)} aria-label={`Remove ${track.title} from the queue`} style={{ border: 'none', background: 'none', color: '#ff4d4d', cursor: 'pointer', fontSize: '16px' }}>✕</button>
+                                    <button type="button" className="queue-remove pressable" onClick={() => removeFromQueue(index)} aria-label={`Remove ${track.title} from the queue`} data-tip="Remove from queue" data-tip-pos="end">✕</button>
                                 </div>
                             );
                         }}

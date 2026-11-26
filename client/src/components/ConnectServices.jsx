@@ -25,27 +25,31 @@ export default function ConnectServices() {
     const names = notSetUp.map(s => s.label).join(' and ');
 
     return (
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '20px', background: '#181818', border: '1px solid #333', borderRadius: '12px', padding: '15px 20px', marginBottom: '20px', flexWrap: 'wrap' }}>
-            <span style={{ color: '#b3b3b3', fontSize: '14px' }}>
+        <div className="connect-banner">
+            <span className="connect-banner-text">
                 {missing.length > 0
                     ? 'Connect your streaming services to search and play music.'
                     : `${names} ${notSetUp.length > 1 ? 'are' : 'is'} not set up on this computer yet.`}
             </span>
-            <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+            <div className="connect-banner-buttons">
                 {missing.map(s => (
                     <button
                         key={s.name}
+                        type="button"
+                        className="fill-pill pressable"
                         onClick={() => s.connectAction()}
-                        style={{ background: s.color, color: 'white', padding: '10px 20px', border: 'none', borderRadius: '20px', fontWeight: 'bold', fontSize: '14px', cursor: 'pointer', whiteSpace: 'nowrap' }}
+                        style={{ '--pill-fill': s.fill, '--pill-on-fill': s.onFill }}
                     >
                         {s.connectLabel}
                     </button>
                 ))}
                 {notSetUp.length > 0 && (
                     <button
+                        type="button"
+                        className="outline-pill pressable"
                         onClick={() => openSettings('accounts')}
-                        title={`${names}: not set up on this computer yet`}
-                        style={{ background: 'transparent', color: 'white', padding: '10px 20px', border: '1px solid #555', borderRadius: '20px', fontWeight: 'bold', fontSize: '14px', cursor: 'pointer', whiteSpace: 'nowrap' }}
+                        data-tip={`${names}: not set up on this computer yet`}
+                        data-tip-pos="end"
                     >
                         {missing.length > 0 ? `Set up ${names}` : 'Open Accounts'}
                     </button>

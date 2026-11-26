@@ -142,7 +142,7 @@ export default function CloudPanel() {
     return (
         <div className="accounts-row cloud-panel">
             <div className="accounts-head">
-                <span className="accounts-icon" style={{ background: '#f38020' }} aria-hidden="true">☁</span>
+                <span className="accounts-icon" style={{ background: 'var(--service-cloud-fill-aa)' }} aria-hidden="true">☁</span>
                 <div className="accounts-name">
                     <strong>{status.linked ? status.username : 'Your account'}</strong>
                     <span>Your account lives in your cloud service. This computer keeps a copy, so the app is fast and works without a connection.</span>

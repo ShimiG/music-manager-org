@@ -5,7 +5,8 @@ import { apiFetch, API_BASE } from '../utils/api';
 import { DEFAULT_SOURCE } from '../utils/services';
 import { mediaUrl, mediaUrlSync, warmMediaToken } from '../utils/media';
 import { artOf } from '../utils/artwork';
-import { setPlaybackTime } from '../utils/playbackClock';
+import { getPlaybackTime, setPlaybackTime } from '../utils/playbackClock';
+import { previousAction } from '../utils/ui';
 
 
 const PREPARE_AFTER_SEC = 15;
@@ -44,6 +45,8 @@ export const MusicProvider = ({ children }) => {
     const [queue, setQueue] = useState([]);
     const [queueIndex, setQueueIndex] = useState(0);
     const [isShuffle, setIsShuffle] = useState(false);
+    // Repeat this track: when it ends it starts again instead of moving on.
+    const [isRepeat, setIsRepeat] = useState(false);
     const originalQueueRef = useRef([]);
     // The position itself lives in utils/playbackClock.js, not here: it
     // changes four times a second and would re-render everything that reads
@@ -128,7 +131,7 @@ export const MusicProvider = ({ children }) => {
                         if (!track.verifyDuration) track.duration = data.duration;
                     }
                     if (data.preview) {
-                        toast(`Only a 30-second preview of "${track.title}" is available.`, { kind: 'warning' });
+                        toast(`Only a 30-second preview of “${track.title}” is available.`, { kind: 'warning' });
                     }
                 })
                 .catch(err => console.error("Failed to fetch true duration:", err));
@@ -200,13 +203,6 @@ export const MusicProvider = ({ children }) => {
     }, [queue, queueIndex, loadAudio]);
 
 
-    const playPrev = useCallback(() => {
-        if (queueIndex > 0) {
-            const prevIndex = queueIndex - 1;
-            setQueueIndex(prevIndex);
-            loadAudio(queue[prevIndex]);
-        }
-    }, [queue, queueIndex, loadAudio]);
 
     // --- 3. QUEUE CONTROLS ---
     const addToQueue = useCallback((track) => {
@@ -279,6 +275,8 @@ export const MusicProvider = ({ children }) => {
         setIsPlaying(!isPlaying);
     }, [isPlaying]);
 
+    const toggleRepeat = useCallback(() => setIsRepeat((on) => !on), []);
+
     const updateVolume = useCallback((newVolume) => {
         setVolume(newVolume);
         audioRef.current.volume = newVolume;
@@ -335,6 +333,18 @@ const seek = useCallback((time) => {
         }
     }, [currentTrack, startStream]);
 
+    // Previous: back to the start of this track once more than a few seconds
+    // have played (or when there is nothing before it), else the track before.
+    const playPrev = useCallback(() => {
+        if (previousAction(getPlaybackTime()) === 'restart' || queueIndex === 0) {
+            if (currentTrack) seek(0);
+            return;
+        }
+        const prevIndex = queueIndex - 1;
+        setQueueIndex(prevIndex);
+        loadAudio(queue[prevIndex]);
+    }, [queue, queueIndex, loadAudio, currentTrack, seek]);
+
 
     // When the next track is asked for (see the effect further down).
     const prepareFrom = duration > 0 ? Math.min(PREPARE_AFTER_SEC, Math.max(0, duration - PREPARE_BEFORE_END_SEC)) : PREPARE_AFTER_SEC;
@@ -351,6 +361,11 @@ const seek = useCallback((time) => {
                 setIsPlaying(false);
                 setIsLoading(false);
                 return; 
+            }
+            // Repeat: the same track again, through the same path as playing it.
+            if (isRepeat && currentTrack) {
+                loadAudio(currentTrack);
+                return;
             }
             playNext();
         };
@@ -391,7 +406,7 @@ const seek = useCallback((time) => {
             console.error("Native Audio Element Error:", e);
             setIsLoading(false);
             setIsPlaying(false);
-            const title = currentTrack?.title ? `"${currentTrack.title}"` : 'This track';
+            const title = currentTrack?.title ? `“${currentTrack.title}”` : 'This track';
             const canSkip = queueIndex < queue.length - 1;
             const failedLoad = loadSeq.current;
             failuresInARow.current += 1;
@@ -449,7 +464,7 @@ const seek = useCallback((time) => {
             audio.removeEventListener('durationchange', handleLoadedMetadata);
             audio.removeEventListener('error', handleError);
         };
-    }, [playNext, setOffset, seek, queue, queueIndex, duration, currentTrack, prepareFrom]);
+    }, [playNext, setOffset, seek, queue, queueIndex, duration, currentTrack, prepareFrom, isRepeat, loadAudio]);
 
     // Get the next track ready while this one plays, so a track change does
     // not wait for the server to find and convert the audio. The server is
@@ -528,6 +543,8 @@ const seek = useCallback((time) => {
         queueIndex,
         isShuffle,
         toggleShuffle,
+        isRepeat,
+        toggleRepeat,
         playQueueIndex,
         removeFromQueue,
         addToQueue

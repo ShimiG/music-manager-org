@@ -59,7 +59,7 @@ export default function NowPlayingView({ open, onClose }) {
             aria-hidden={!open}
             inert={!open}
         >
-            <button ref={closeRef} type="button" className="now-playing-close" onClick={onClose} aria-label="Close Now Playing" title="Close (Esc)">
+            <button ref={closeRef} type="button" className="now-playing-close" onClick={onClose} aria-label="Close Now Playing" data-tip="Close (Esc)" data-tip-pos="below-start">
                 <svg viewBox="0 0 24 24" width="28" height="28" aria-hidden="true"><path fill="currentColor" d="M7.4 8.6 12 13.200l4.600-4.600L18 10l-6 6-6-6z" /></svg>
             </button>
 
@@ -70,7 +70,7 @@ export default function NowPlayingView({ open, onClose }) {
                         <h2 className="now-playing-title">{track.title}</h2>
                         <p className="now-playing-artist">{artist}{track.album ? ` · ${track.album}` : ''}</p>
                         <p className="now-playing-meta">
-                            <span className="now-playing-source" style={{ color: service.color, borderColor: service.color }}>
+                            <span className="now-playing-source" style={{ color: service.text, borderColor: service.text }}>
                                 <span aria-hidden="true">{service.icon}</span> {service.label}
                             </span>
                             {service.attribution && (

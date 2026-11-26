@@ -1,9 +1,13 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { apiFetch } from '../utils/api';
 import { toast } from '../utils/toast';
+import { serviceOf } from '../utils/services';
 
-const box = { background: '#181818', border: '1px solid #333', borderRadius: '10px', padding: '14px 16px', marginBottom: '20px' };
-const smallButton = { padding: '6px 12px', borderRadius: '4px', border: '1px solid #555', background: 'transparent', color: '#ddd', cursor: 'pointer', fontSize: '12px', fontWeight: 'bold' };
+// The folder panel belongs to Local Files: its button takes that service's fill.
+const LOCAL = serviceOf('local');
+
+const box = { background: 'var(--surface-100)', border: '1px solid var(--border-200)', borderRadius: '10px', padding: '14px 16px', marginBottom: '20px' };
+const smallButton = { padding: '6px 12px', borderRadius: '4px', border: '1px solid var(--border-400-aa)', background: 'transparent', color: 'var(--text-body)', cursor: 'pointer', fontSize: '12px', fontWeight: 'bold' };
 
 const when = (ms) => (ms ? new Date(ms).toLocaleString() : 'never');
 
@@ -60,7 +64,7 @@ export default function LocalFoldersPanel({ onChange }) {
     };
 
     const remove = async (folder) => {
-        if (!window.confirm(`Remove "${folder.path}" from your library? The files themselves are not touched.`)) return;
+        if (!window.confirm(`Remove “${folder.path}” from your library? The files themselves are not touched.`)) return;
         try {
             await apiFetch(`/api/local/folders/${encodeURIComponent(folder.id)}`, { method: 'DELETE' });
             await load();
@@ -73,17 +77,17 @@ export default function LocalFoldersPanel({ onChange }) {
     return (
         <section style={box} aria-label="Local music folders">
             <div style={{ fontWeight: 'bold', marginBottom: '8px' }}>Music folders</div>
-            {folders === null && <div style={{ color: '#888', fontSize: '13px' }}>Loading…</div>}
+            {folders === null && <div style={{ color: 'var(--text-subtle)', fontSize: '13px' }}>Loading…</div>}
             {folders && folders.length === 0 && (
-                <div style={{ color: '#aaa', fontSize: '13px', marginBottom: '10px' }}>
+                <div style={{ color: 'var(--text-muted)', fontSize: '13px', marginBottom: '10px' }}>
                     Add a folder on this computer that holds your music (MP3, M4A, FLAC, WAV, OGG, Opus…). Its subfolders are included.
                 </div>
             )}
             {folders && folders.map(f => (
-                <div key={f.id} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '8px 0', borderTop: '1px solid #2a2a2a', flexWrap: 'wrap' }}>
+                <div key={f.id} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '8px 0', borderTop: '1px solid var(--border-100)', flexWrap: 'wrap' }}>
                     <div style={{ flex: 1, minWidth: '200px' }}>
                         <div style={{ fontFamily: 'ui-monospace, Menlo, monospace', fontSize: '13px', wordBreak: 'break-all' }}>{f.path}</div>
-                        <div style={{ color: f.error ? '#ff6b6b' : '#888', fontSize: '12px', marginTop: '2px' }}>
+                        <div style={{ color: f.error ? 'var(--danger)' : 'var(--text-subtle)', fontSize: '12px', marginTop: '2px' }}>
                             {f.scanning
                                 ? `Scanning… ${f.progress && f.progress.total ? `${f.progress.done} / ${f.progress.total} files` : ''}`
                                 : f.error
@@ -92,7 +96,7 @@ export default function LocalFoldersPanel({ onChange }) {
                         </div>
                     </div>
                     <button type="button" style={smallButton} onClick={() => rescan(f)} disabled={f.scanning}>Rescan</button>
-                    <button type="button" style={{ ...smallButton, color: '#ff8a8a', borderColor: '#663333' }} onClick={() => remove(f)}>Remove</button>
+                    <button type="button" style={{ ...smallButton, color: 'var(--danger-soft)', borderColor: 'var(--danger-border)' }} onClick={() => remove(f)}>Remove</button>
                 </div>
             ))}
             <form onSubmit={add} style={{ display: 'flex', gap: '8px', marginTop: '10px', flexWrap: 'wrap' }}>
@@ -102,9 +106,9 @@ export default function LocalFoldersPanel({ onChange }) {
                     placeholder="Folder path, e.g. ~/Music"
                     aria-label="Folder path"
                     maxLength={1024}
-                    style={{ flex: 1, minWidth: '220px', padding: '8px 10px', borderRadius: '4px', border: '1px solid #555', background: '#121212', color: '#eee', font: 'inherit', fontSize: '13px' }}
+                    style={{ flex: 1, minWidth: '220px', padding: '8px 10px', borderRadius: '4px', border: '1px solid var(--border-400-aa)', background: 'var(--bg-base)', color: 'var(--text-strong)', font: 'inherit', fontSize: '13px' }}
                 />
-                <button type="submit" disabled={busy || !path.trim()} style={{ padding: '8px 16px', borderRadius: '4px', border: 'none', background: '#3b82f6', color: '#fff', fontWeight: 'bold', cursor: 'pointer', opacity: busy || !path.trim() ? 0.5 : 1 }}>
+                <button type="submit" disabled={busy || !path.trim()} style={{ padding: '8px 16px', borderRadius: '4px', border: 'none', background: LOCAL.fill, color: LOCAL.onFill, fontWeight: 'bold', cursor: 'pointer', opacity: busy || !path.trim() ? 0.5 : 1 }}>
                     {busy ? 'Adding…' : 'Add folder'}
                 </button>
             </form>

@@ -57,7 +57,7 @@ function RecentPlays({ plays, onRefresh }) {
                                 <li key={play.n}>
                                     <span>
                                         {clock(play.at)} · {play.source} {play.id}
-                                        <small style={what.kind === 'error' ? { color: '#ff8a8a' } : undefined}>{what.text}</small>
+                                        <small style={what.kind === 'error' ? { color: 'var(--danger-soft)' } : undefined}>{what.text}</small>
                                         {(play.notes || []).map(note => <small key={note}>{note}</small>)}
                                     </span>
                                     <span className={`accounts-status is-${what.kind === 'error' ? 'warn' : what.kind}`}>{what.label}</span>

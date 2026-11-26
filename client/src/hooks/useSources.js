@@ -8,7 +8,7 @@ import { paths, serviceOf } from '../utils/services';
 //
 //   name, label, capabilities, connected, expiresAt     from the server
 //   connect: { required, kind, available }              from the server
-//   icon, color, connectLabel, attribution, local,
+//   icon, color, fill, onFill, text, connectLabel, attribution, local,
 //   manageFolders                                       from the registry
 //   connectAction: () => void | null                    the registry's connect flow
 //
@@ -37,6 +37,9 @@ function merge(source) {
         ...source,
         icon: visuals.icon,
         color: visuals.color,
+        fill: visuals.fill,
+        onFill: visuals.onFill,
+        text: visuals.text,
         connectLabel: visuals.connectLabel || `Connect ${source.label}`,
         attribution: visuals.attribution || null,
         local: Boolean(visuals.local),

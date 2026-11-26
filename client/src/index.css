@@ -1,96 +1,90 @@
-
+/* Design tokens. Every colour and shared size in the client is defined here
+   once and referenced as var(--name); the only other colour values live in
+   utils/services.js (one entry per service). Names follow the Music Manager
+   design system; the "-aa" tokens are its contrast-fixed variants. */
 :root {
-  
-  font-family: Inter, system-ui, sans-serif;
-  color: #fff;
-  background-color: #121212; 
+  /* Surfaces */
+  --bg-black: #000000;  --bg-base: #121212;
+  --surface-100: #181818; --surface-200: #1e1e1e; --surface-300: #282828;
+  --surface-400: #333333; --surface-500: #3e3e3e;
+  --surface-liked: #2a1f2f; --surface-liked-hover: #3a2a40;
+  --menu-hover: #3a3a3a;
+
+  /* Rules and control borders */
+  --border-100: #2c2c2c; --border-200: #333333; --border-300: #444444; --border-400-aa: #646464;
+
+  /* Text */
+  --text-primary: #ffffff; --text-strong: #eeeeee; --text-body: #dddddd; --text-lyric: #e6e6e6;
+  --text-secondary: #b3b3b3; --text-muted: #aaaaaa; --text-dim: #999999; --text-past: #8a8a8a;
+  --text-subtle: #888888; --text-faint-aa: #8e8e8e;
+
+  /* App accent */
+  --accent: #1db954; --accent-hover: #1ed760; --accent-tint: #1db95420; --accent-tint-weak: #1db95415;
+  --accent-tint-strong: #1db95430; --on-accent: #000000;
+
+  /* States */
+  --danger: #ff4d4d; --danger-tint: #ff4d4d20; --danger-soft: #ff8a80; --danger-border: #663333;
+  --warning: #f0c040; --notice: #ffb84d; --notice-tint: #ffb84d20;
+  --status-ok: #4ade80; --status-warn: #fbbf24;
+  --toast-error-border: #bb3333; --toast-warning-border: #cc8800;
+
+  /* Rails, washes, overlays */
+  --rail: #4d4d4d; --thumb: #ffffff;
+  --overlay-hover: rgba(255,255,255,.1); --overlay-row: rgba(255,255,255,.06);
+  --overlay-chip-hover: rgba(255,255,255,.08); --overlay-active: #ffffff24;
+  --overlay-lyric: #ffffff12; --overlay-close-hover: #ffffff22; --scrim: #00000055;
+  --cover-scrim: rgba(0,0,0,.55); --focus-glow: #ffffff55;
+  --card-action-bg: rgba(38,38,38,.78); --card-action-bg-hover: rgba(72,72,72,.95);
+  --card-action-border: rgba(255,255,255,.16); --card-action-ink: #cfcfcf;
+
+  /* The light "Up Next" card beside Search and Recently Played */
+  --panel-light: #f9f9f9; --panel-light-row: #ffffff; --panel-light-rule: #dddddd; --ink-on-light: #000000;
+
+  /* A non-service disc: the cloud account row in Settings */
+  --service-cloud-fill-aa: #bc5b0a;
+
+  /* Shadows */
+  --shadow-toast: 0 4px 12px rgba(0,0,0,.4); --shadow-menu: 0 8px 24px rgba(0,0,0,.5);
+  --shadow-art: 0 16px 48px rgba(0,0,0,.5); --shadow-light-card: 0 1px 3px rgba(0,0,0,.1);
+
+  /* Motion */
+  --ease-fast: .15s ease; --tooltip-delay: .6s;
+
+  /* Type */
+  --font-sans: Inter, system-ui, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  font-family: var(--font-sans);
+  color: var(--text-primary);
+  background-color: var(--bg-base);
   margin: 0;
   padding: 0;
 }
 
-  @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-  }
-  .loader {
-    border: 4px solid #f3f3f3;
-    border-top: 4px solid #3498db;
-    border-radius: 50%;
-    width: 20px;
-    height: 20px;
-    animation: spin 1s linear infinite;
-  }
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+.loader {
+  border: 4px solid var(--text-strong);
+  border-top: 4px solid var(--text-subtle);
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  animation: spin 1s linear infinite;
+}
 
 body {
   margin: 0;
   padding: 0;
   width: 100vw;
   height: 100vh;
-  overflow: hidden; 
+  overflow: hidden;
 }
-
-
-.app-container {
-  display: flex;      
-  flex-direction: row; 
-  height: 100vh;       
-  width: 100vw;
-}
-
-
-.sidebar {
-  width: 240px;      
-  background-color: #000;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  border-right: 1px solid #333;
-}
-
-.sidebar button {
-  background: transparent;
-  border: none;
-  color: #b3b3b3;
-  text-align: left;
-  padding: 12px 0;
-  font-size: 16px;
-  cursor: pointer;
-}
-
-.sidebar button:hover { color: white; }
-
 
 .content {
-  flex: 1;            
+  flex: 1;
   padding: 30px;
-  overflow-y: auto;  
-  background: linear-gradient(to bottom, #1e1e1e, #121212);
-}
-
-
-.search-view input {
-  width: 100%;
-  max-width: 400px;
-  padding: 12px;
-  border-radius: 50px;
-  border: none;
-  margin-bottom: 20px;
-}
-
-.song-item:hover {
-  background-color: rgba(255,255,255,0.1);
-}
-
-.player-footer {
-    background-color: var(--theme-surface, #181818);
-    border-top: 1px solid #282828;
-    padding: 15px;
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    z-index: 100;
+  overflow-y: auto;
+  background: linear-gradient(to bottom, var(--surface-200), var(--bg-base));
 }

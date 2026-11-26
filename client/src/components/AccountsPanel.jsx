@@ -82,7 +82,7 @@ function AccountRow({ source, service, onServices }) {
         setBusy(true);
         try {
             await apiFetch(`/api/user/connections/${encodeURIComponent(source.name)}`, { method: 'DELETE' });
-            toast(`${source.label} disconnected.`);
+            toast(`Disconnected ${source.label}.`);
             changed();
         } catch (err) {
             toast(err.message || `Could not disconnect ${source.label}.`, { kind: 'error' });
@@ -108,30 +108,34 @@ function AccountRow({ source, service, onServices }) {
     // extra, so "not set up" is no warning there.
     const optional = !source.searchRequiresConnection;
     let status;
-    if (source.connected) status = { text: 'Connected', kind: 'ok' };
-    else if (available) status = { text: 'Not connected', kind: 'off' };
-    else if (optional) status = { text: 'Works without an account', kind: 'off' };
-    else status = { text: 'Not set up', kind: 'warn' };
+    if (source.connected) status = { text: 'Connected', kind: 'ok', tip: `Your ${source.label} account is connected.` };
+    else if (available) status = { text: 'Not connected', kind: 'off', tip: optional ? `${source.label} works without an account; connecting adds your own music.` : `Connect your ${source.label} account to use it here.` };
+    else if (optional) status = { text: 'Works without an account', kind: 'off', tip: `Search and playback on ${source.label} need no account.` };
+    else status = { text: 'Not set up', kind: 'warn', tip: `${source.label} needs setting up on this computer first.` };
 
     return (
         <li className="accounts-row">
             <div className="accounts-head">
-                <span className="accounts-icon" style={{ background: visuals.color }} aria-hidden="true">{visuals.icon}</span>
+                <span className="accounts-icon" style={{ background: visuals.fill, color: visuals.onFill }} aria-hidden="true">{visuals.icon}</span>
                 <div className="accounts-name">
                     <strong>{source.label}</strong>
                     {visuals.accountNote && <span>{visuals.accountNote}</span>}
                 </div>
-                <span className={`accounts-status is-${status.kind}`}>{status.text}</span>
+                <span className={`accounts-status is-${status.kind}`} data-tip={status.tip} data-tip-pos="end">{status.text}</span>
                 <div className="accounts-buttons">
-                    {source.connected && <button type="button" className="settings-button" onClick={disconnect} disabled={busy}>Disconnect</button>}
+                    {source.connected && <button type="button" className="settings-link is-danger" onClick={disconnect} disabled={busy}>Disconnect</button>}
                     {!source.connected && available && source.connectAction && (
-                        <button type="button" className="settings-button is-primary" onClick={() => source.connectAction()}>{source.connectLabel}</button>
+                        <button type="button" className="fill-pill is-small pressable" onClick={() => source.connectAction()} style={{ '--pill-fill': visuals.fill, '--pill-on-fill': visuals.onFill }}>{source.connectLabel}</button>
                     )}
                     {!available && service && service.canEdit && !editing && (
                         <button type="button" className={`settings-button ${optional ? '' : 'is-primary'}`} onClick={() => setEditing(true)}>Set up {source.label}</button>
                     )}
                 </div>
             </div>
+
+            {!source.connected && available && !optional && (
+                <p className="accounts-detail">Connect your {source.label} account to search its catalogue.</p>
+            )}
 
             {!available && !editing && (
                 <p className="accounts-detail">

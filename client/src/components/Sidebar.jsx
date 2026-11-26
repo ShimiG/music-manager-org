@@ -1,29 +1,35 @@
 import React from 'react';
 import { useMusic } from '../context/hook';
 
+const VIEWS = [
+    { id: 'search', label: '🔍 Search' },
+    { id: 'library', label: '📚 My Library' },
+    { id: 'history', label: '🕒 Recently Played' },
+    { id: 'settings', label: '⚙️ Settings' }
+];
+
 export default function Sidebar({ view, setView, handleLogout }) {
     const { currentTrack } = useMusic();
 
-    const getBtnStyle = (targetView) => ({
-        color: view === targetView ? 'white' : '#b3b3b3',
-        background: 'transparent', border: 'none', cursor: 'pointer', 
-        display: 'block', marginBottom: '15px', fontSize: '16px', 
-        fontWeight: 'bold', textAlign: 'left'
-    });
-
     return (
-        <nav className="sidebar" style={{ paddingBottom: currentTrack ? '100px' : '20px', overflowY: 'auto' }}>
-            <h2>🎵 Music</h2>
-            <button onClick={() => setView('search')} style={getBtnStyle('search')}>🔍 Search</button>
-            <button onClick={() => setView('library')} style={getBtnStyle('library')}>📚 My Library</button>
-            <button onClick={() => setView('history')} style={getBtnStyle('history')}>🕒 Recently Played</button>
-            <button onClick={() => setView('settings')} style={getBtnStyle('settings')}>⚙️ Settings</button>
-
-            <div style={{ flex: 1 }}></div> 
-            {/* Shrink-wrap the button to its text so only the label is clickable,
-                not the full sidebar width (alignSelf covers a flex parent,
-                width:fit-content covers a block one). */}
-            <button onClick={handleLogout} style={{ background: 'transparent', border: 'none', color: '#ff4d4d', cursor: 'pointer', fontSize: '16px', fontWeight: 'bold', textAlign: 'left', display: 'inline-block', width: 'fit-content', alignSelf: 'flex-start' }}>
+        // Room at the bottom while the player bar lies over the column, so
+        // Logout stays above it.
+        <nav className={`sidebar${currentTrack ? ' has-player' : ''}`} aria-label="Main">
+            <h2 className="sidebar-title">🎵 Music</h2>
+            {VIEWS.map(({ id, label }) => (
+                <button
+                    key={id}
+                    type="button"
+                    className="sidebar-item pressable"
+                    aria-current={view === id ? 'page' : undefined}
+                    onClick={() => setView(id)}
+                >
+                    {label}
+                </button>
+            ))}
+            <div className="sidebar-spacer" />
+            {/* Shrink-wrapped to its label, so only the words are clickable. */}
+            <button type="button" className="sidebar-logout pressable" onClick={handleLogout}>
                 Logout
             </button>
         </nav>

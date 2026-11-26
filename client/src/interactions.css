@@ -1,0 +1,104 @@
+/* Shared interaction utilities (UI refresh): press feedback, hover washes,
+   tooltips, and the few small animations. Imported once, from main.jsx. */
+
+/* Press feedback on any clickable control */
+.pressable {
+  transition: transform .12s ease, background-color var(--ease-fast), color var(--ease-fast),
+    border-color var(--ease-fast), opacity var(--ease-fast);
+}
+.pressable:active:not(:disabled) { transform: scale(.95); }
+
+/* Round icon buttons */
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--text-secondary);
+  font: inherit;
+  cursor: pointer;
+}
+.icon-btn:hover { background: var(--overlay-hover); color: var(--text-primary); }
+.icon-btn:disabled { opacity: .5; cursor: default; }
+.icon-btn:focus-visible { outline: 2px solid var(--text-primary); outline-offset: 2px; }
+.icon-btn svg { width: 20px; height: 20px; }
+
+/* Tooltips: put data-tip on the element. Shown after a 0.6s hover, at once on
+   keyboard focus. The anchor rule has no specificity (:where), so an element
+   that is already positioned (absolute, sticky) keeps its own position.
+   Pseudo-elements are clipped by an ancestor with overflow: hidden, so put
+   data-tip on a wrapper that does not clip, never on the ellipsis element. */
+:where([data-tip]) { position: relative; }
+[data-tip]::after {
+  content: attr(data-tip);
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 8px);
+  transform: translate(-50%, 4px);
+  padding: 6px 10px;
+  border-radius: 6px;
+  background: var(--surface-300);
+  color: var(--text-strong);
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 400;
+  font-style: normal;
+  line-height: 1.35;
+  letter-spacing: normal;
+  text-align: left;
+  text-transform: none;
+  white-space: nowrap;
+  max-width: 420px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  box-shadow: var(--shadow-menu);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 60;
+  transition: opacity var(--ease-fast), transform var(--ease-fast);
+}
+[data-tip]:hover::after { opacity: 1; transform: translate(-50%, 0); transition-delay: var(--tooltip-delay); }
+[data-tip]:focus-visible::after,
+[data-tip]:has(> :focus-visible)::after { opacity: 1; transform: translate(-50%, 0); }
+[data-tip-pos="start"]::after { left: 0; transform: translate(0, 4px); }
+[data-tip-pos="start"]:hover::after,
+[data-tip-pos="start"]:focus-visible::after,
+[data-tip-pos="start"]:has(> :focus-visible)::after { transform: none; }
+[data-tip-pos="end"]::after { left: auto; right: 0; transform: translate(0, 4px); }
+[data-tip-pos="end"]:hover::after,
+[data-tip-pos="end"]:focus-visible::after,
+[data-tip-pos="end"]:has(> :focus-visible)::after { transform: none; }
+/* Nothing to say: no bubble (an attribute can be present but empty). */
+[data-tip=""]::after { display: none; }
+
+/* Below the anchor: for controls near the top of a scrolling area, where a
+   bubble above would be clipped. */
+[data-tip-pos="below"]::after { bottom: auto; top: calc(100% + 8px); transform: translate(-50%, -4px); }
+[data-tip-pos="below-start"]::after { bottom: auto; top: calc(100% + 8px); left: 0; transform: translate(0, -4px); }
+[data-tip-pos="below-start"]:hover::after,
+[data-tip-pos="below-start"]:focus-visible::after { transform: none; }
+
+/* Like "pop" */
+@keyframes mm-pop { 40% { transform: scale(1.35); } }
+.pop { animation: mm-pop .32s ease; }
+
+/* Toast entrance */
+@keyframes mm-toast-in { from { opacity: 0; transform: translateY(10px); } }
+.toast { animation: mm-toast-in .22s ease; }
+
+/* Now-playing equaliser bars */
+@keyframes mm-vu { 50% { transform: scaleY(.35); } }
+.vu { transform-origin: bottom; animation: mm-vu .9s ease-in-out infinite; }
+
+/* Revealed on hover or focus; a touch screen has no hover, so always there. */
+@media (hover: none) { .hover-reveal { opacity: 1 !important; transform: none !important; } }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}

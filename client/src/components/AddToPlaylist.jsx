@@ -2,8 +2,12 @@ import { useEffect, useRef, useState } from 'react';
 import { addTrackToCustomPlaylist, createCustomPlaylist, listCustomPlaylists } from '../utils/library';
 import { toast } from '../utils/toast';
 
-const menuStyle = { position: 'absolute', right: 0, top: 'calc(100% + 6px)', minWidth: '220px', maxHeight: '260px', overflowY: 'auto', background: '#282828', border: '1px solid #444', borderRadius: '8px', boxShadow: '0 8px 24px rgba(0,0,0,0.5)', zIndex: 50, padding: '6px' };
-const itemStyle = { display: 'block', width: '100%', textAlign: 'left', padding: '8px 10px', background: 'transparent', border: 'none', borderRadius: '4px', color: '#eee', cursor: 'pointer', font: 'inherit', fontSize: '13px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' };
+// The list icon with a plus: "add to a playlist".
+const PlaylistIcon = ({ size }) => (
+    <svg width={size} height={size} viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true">
+        <path d="M3 5h9M3 9h9M3 13h5M15 10v6M12 13h6" />
+    </svg>
+);
 
 // The menu normally hangs from the button's right edge, reaching to the left
 // (up to about 300px with its "new playlist" field). Whether there is room for that inside the area that
@@ -60,7 +64,8 @@ export default function AddToPlaylist({ track, compact = false }) {
         setBusy(true);
         try {
             const result = await addTrackToCustomPlaylist(playlist.id, track);
-            toast(result && result.alreadyInPlaylist ? `Already in "${playlist.name}".` : `Added to "${playlist.name}".`);
+            const title = track.title || 'this track';
+            toast(result && result.alreadyInPlaylist ? `“${title}” is already in ${playlist.name}.` : `Added “${title}” to ${playlist.name}.`);
             window.dispatchEvent(new Event('custom-playlists-changed'));
             setOpen(false);
         } catch (err) {
@@ -87,53 +92,43 @@ export default function AddToPlaylist({ track, compact = false }) {
     };
 
     return (
-        <span ref={rootRef} style={{ position: 'relative', display: compact ? 'block' : 'inline-block' }}>
+        <span ref={rootRef} className={`playlist-menu-anchor${compact ? ' is-compact' : ''}`}>
             {compact ? (
-                <button type="button" className="card-action" onClick={toggle} aria-haspopup="menu" aria-expanded={open} title="Add to playlist" aria-label="Add to playlist">
-                    <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true">
-                        <path d="M3 5h9M3 9h9M3 13h5M15 10v6M12 13h6" />
-                    </svg>
+                <button type="button" className="card-action pressable" onClick={toggle} aria-haspopup="menu" aria-expanded={open} aria-label="Add to playlist" data-tip={open ? undefined : 'Add to playlist'} data-tip-pos="end">
+                    <PlaylistIcon size={16} />
                 </button>
             ) : (
-                <button
-                    onClick={toggle}
-                    aria-haspopup="menu"
-                    aria-expanded={open}
-                    title="Add to a playlist"
-                    style={{ padding: '6px 12px', borderRadius: '4px', border: '1px solid #555', background: 'transparent', color: '#ddd', cursor: 'pointer', fontSize: '12px', fontWeight: 'bold', whiteSpace: 'nowrap' }}
-                >
-                    + Playlist
+                <button type="button" className="icon-btn pressable" onClick={toggle} aria-haspopup="menu" aria-expanded={open} aria-label="Add to playlist" data-tip={open ? undefined : 'Add to playlist'}>
+                    <PlaylistIcon size={20} />
                 </button>
             )}
             {open && (
-                <div role="menu" style={hangLeft ? { ...menuStyle, right: 'auto', left: 0 } : menuStyle} onClick={(e) => e.stopPropagation()}>
-                    {playlists === null && <div style={{ ...itemStyle, color: '#888', cursor: 'default' }}>Loading…</div>}
+                <div role="menu" className={`playlist-menu${hangLeft ? ' hangs-right' : ''}`} onClick={(e) => e.stopPropagation()}>
+                    {playlists === null && <div className="playlist-menu-item is-note">Loading…</div>}
                     {playlists && playlists.length === 0 && (
-                        <div style={{ ...itemStyle, color: '#888', cursor: 'default' }}>No playlists yet</div>
+                        <div className="playlist-menu-item is-note">No playlists yet</div>
                     )}
                     {playlists && playlists.map(p => (
                         <button
                             key={p.id}
+                            type="button"
                             role="menuitem"
-                            style={itemStyle}
+                            className="playlist-menu-item"
                             disabled={busy}
                             onClick={() => addTo(p)}
-                            onMouseEnter={(e) => { e.currentTarget.style.background = '#3a3a3a'; }}
-                            onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
                         >
                             {p.name}
                         </button>
                     ))}
-                    <form onSubmit={createAndAdd} style={{ display: 'flex', gap: '6px', padding: '6px 4px 2px', borderTop: '1px solid #444', marginTop: '4px' }}>
+                    <form onSubmit={createAndAdd} className="playlist-menu-new">
                         <input
                             value={newName}
                             onChange={(e) => setNewName(e.target.value)}
                             placeholder="New playlist…"
                             maxLength={120}
                             aria-label="New playlist name"
-                            style={{ flex: 1, minWidth: 0, padding: '6px 8px', borderRadius: '4px', border: '1px solid #555', background: '#181818', color: '#eee', font: 'inherit', fontSize: '13px' }}
                         />
-                        <button type="submit" disabled={busy || !newName.trim()} style={{ padding: '6px 10px', borderRadius: '4px', border: 'none', background: '#1db954', color: '#000', fontWeight: 'bold', cursor: 'pointer', fontSize: '12px', opacity: busy || !newName.trim() ? 0.5 : 1 }}>
+                        <button type="submit" className="pressable" disabled={busy || !newName.trim()}>
                             Add
                         </button>
                     </form>

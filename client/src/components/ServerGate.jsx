@@ -8,8 +8,8 @@ import { waitForServer } from '../utils/api';
 // until the server answers. When it is already up, this adds one request of a
 // few milliseconds.
 
-const screen = { display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '16px', height: '100vh', width: '100vw', background: '#121212', color: '#b3b3b3' };
-const button = { background: '#1db954', color: 'black', padding: '10px 24px', border: 'none', borderRadius: '24px', fontWeight: 'bold', cursor: 'pointer' };
+const screen = { display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '16px', height: '100vh', width: '100vw', background: 'var(--bg-base)', color: 'var(--text-secondary)' };
+const button = { background: 'var(--accent)', color: 'var(--on-accent)', padding: '10px 24px', border: 'none', borderRadius: '24px', fontWeight: 'bold', cursor: 'pointer' };
 
 export default function ServerGate({ children }) {
     // checking: asked, no answer yet (too soon to say anything)
@@ -32,14 +32,14 @@ export default function ServerGate({ children }) {
     if (state === 'starting') {
         return (
             <div style={screen} role="status">
-                <h1 style={{ color: 'white', margin: 0 }}>Music Manager</h1>
+                <h1 style={{ color: 'var(--text-primary)', margin: 0 }}>Music Manager</h1>
                 <p style={{ margin: 0 }}>Starting…</p>
             </div>
         );
     }
     return (
         <div style={screen} role="alert">
-            <h1 style={{ color: 'white', margin: 0 }}>Music Manager</h1>
+            <h1 style={{ color: 'var(--text-primary)', margin: 0 }}>Music Manager</h1>
             <p style={{ margin: 0, maxWidth: '420px', textAlign: 'center' }}>
                 The app's local server is not answering. If you run it from source, start it with <code>npm start</code>.
             </p>
